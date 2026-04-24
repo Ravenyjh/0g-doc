@@ -40,80 +40,24 @@ The default **Router** view on [pc.0g.ai](https://pc.0g.ai) shows the Router bal
 
 ## Available Services
 
-:::info Testnet Services
+The provider and model catalog changes frequently (providers join and leave, pricing is set per-provider). This page does not reproduce the list — check a live source instead:
 
-<details>
-<summary><b>View Testnet Services (2 Available)</b></summary>
+- **Web UI** — [pc.0g.ai](https://pc.0g.ai) (switch to **Advanced** mode, top-right) or [compute-marketplace.0g.ai/inference](https://compute-marketplace.0g.ai/inference) — both show the current provider catalog with pricing, health, and TEE attestation
+- **CLI** — `0g-compute-cli inference list-providers`
+- **SDK** — `await broker.inference.listService()`
 
-| # | Model | Type | Provider | Input (per 1M tokens) | Output (per 1M tokens) |
-|---|-------|------|----------|----------------------|------------------------|
-| 1 | `qwen-2.5-7b-instruct` | Chatbot | `0xa48f01...` | 0.05 0G | 0.10 0G |
-| 2 | `qwen-image-edit-2511` | Image-Edit | `0x4b2a9...` | - | 0.005 0G/image |
+### Verification modes
 
-**Available Models by Type:**
+Each service declares one of two TEE verification modes:
 
-**Chatbots (1 model):**
-- **Qwen 2.5 7B Instruct**: Fast and efficient conversational model
+**TeeML** — The AI model runs directly inside a Trusted Execution Environment. The TEE guarantees that both the model and the computation are protected, and responses are signed by the TEE's private key. Used by self-hosted models.
 
-**Image-Edit (1 model):**
-- **Qwen Image Edit 2511**: Advanced image editing and manipulation model
-
-All testnet services feature TeeML verifiability and are ideal for development and testing.
-
-</details>
-
-:::
-
-:::tip Mainnet Services
-
-<details>
-<summary><b>View Mainnet Services (7 Available)</b></summary>
-
-| # | Model | Type | Verification | Provider | Input (per 1M tokens) | Output (per 1M tokens) |
-|---|-------|------|-------------|----------|----------------------|------------------------|
-| 1 | `GLM-5-FP8` | Chatbot | TeeML | `0xd9966e...` | 1 0G | 3.2 0G |
-| 2 | `deepseek-chat-v3-0324` | Chatbot | TeeML | `0x1B3AAe...` | 0.30 0G | 1.00 0G |
-| 3 | `gpt-oss-120b` | Chatbot | TeeML | `0xBB3f5b...` | 0.10 0G | 0.49 0G |
-| 4 | `qwen3-vl-30b-a3b-instruct` | Chatbot | TeeML | `0x4415ef...` | 0.49 0G | 0.49 0G |
-| 5 | `qwen3.6-plus` | Chatbot | TeeTLS | `0x992e63...` | 0.80 0G¹ | 4.80 0G¹ |
-| 6 | `whisper-large-v3` | Speech-to-Text | TeeML | `0x36aCff...` | 0.05 0G | 0.11 0G |
-| 7 | `z-image` | Text-to-Image | TeeML | `0xE29a72...` | - | 0.003 0G/image |
-
-> ¹ **Tiered Pricing:** `qwen3.6-plus` uses input-length-based tiered pricing. Input ≤256k tokens: 0.80 / 4.80 0G. Input >256k tokens: 3.20 / 9.60 0G (×4 input, ×2 output).
-
-**Available Models by Type:**
-
-**Chatbots (5 models):**
-- **GLM-5-FP8**: High-performance reasoning model (FP8 quantized)
-- **GPT-OSS-120B**: Large-scale open-source GPT model
-- **Qwen3 VL 30B A3B Instruct**: Efficient conversational model (text-only; image input is not yet supported)
-- **Qwen3.6-Plus** *(TeeTLS)*: Alibaba's flagship LLM with hybrid linear attention and sparse MoE routing, optimized for agentic coding, multi-step workflows, and complex reasoning. 1M token context window, 119 languages. Powered by Alibaba Cloud Model Studio.
-- **DeepSeek Chat V3**: Optimized conversational model
-
-**Speech-to-Text (1 model):**
-- **Whisper Large V3**: OpenAI's state-of-the-art transcription model
-
-**Text-to-Image (1 model):**
-- **Z-Image**: Fast high-quality image generation
-
-#### Verification Modes
-
-0G Compute supports two TEE verification modes depending on how the model is hosted:
-
-**TeeML** — The AI model runs directly inside a Trusted Execution Environment. The TEE guarantees that both the model and the computation are protected, and responses are signed by the TEE's private key. Used by self-hosted models (e.g., GLM-5-FP8, DeepSeek, GPT-OSS-120B).
-
-**TeeTLS** — The Broker runs inside a TEE and proxies requests to a centralized LLM provider (e.g., Alibaba Cloud Model Studio) over HTTPS. This provides cryptographic proof that responses genuinely came from the real provider, with the following guarantees:
+**TeeTLS** — The Broker runs inside a TEE and proxies requests to a centralized LLM provider over HTTPS. This provides cryptographic proof that responses genuinely came from the real provider:
 
 - **Authentic routing**: During the TLS handshake, the Broker verifies the provider's certificate against trusted Certificate Authorities, ensuring the connection reaches the real provider — not an imposter.
 - **Cryptographic proof**: The Broker captures the provider's TLS certificate fingerprint and bundles it together with the request hash, response hash, and provider identity into a signed routing proof using its TEE-protected private key.
 - **Privacy preservation**: Since the Broker runs inside a TEE, it cannot inspect or tamper with user data in transit — 0G acts as a verifiable relay, not a middleman. This is conceptually similar to zkTLS but with stronger privacy properties, as the TEE ensures the relay itself is trustworthy.
 - **End-to-end integrity**: The TEE attestation proves the Broker is running unmodified code, the CA/TLS system guarantees only the real provider holds a valid certificate for their domain, and the TEE signature binds everything together — a verifier can confirm the proof came from a genuine TEE and that the fingerprint belongs to the expected provider.
-
-Used by centralized API-backed models (e.g., `qwen3.6-plus` via Alibaba Cloud).
-
-</details>
-
-:::
 
 ## Choose Your Interface
 
