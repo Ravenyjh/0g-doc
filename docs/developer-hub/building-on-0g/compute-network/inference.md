@@ -1,16 +1,30 @@
 ---
 id: inference
 title: Inference
-sidebar_position: 3
-description: "Run decentralized AI inference on 0G Compute Network. Use LLMs, image generation, and speech-to-text via Web UI, CLI, or SDK with OpenAI compatibility."
+sidebar_position: 1
+sidebar_label: Inference
+description: "Run inference on 0G Compute via the Direct path — connect to individual providers, manage per-provider sub-accounts, and sign requests with your wallet. Web UI, CLI, and SDK options."
 ---
 
 import Tabs from '@theme/Tabs';
 import TabItem from '@theme/TabItem';
 
-# 0G Compute Inference
+# Inference
 
-0G Compute Network provides decentralized AI inference services, supporting various AI models including Large Language Models (LLM), text-to-image generation, and speech-to-text processing.
+Run inference by connecting to individual 0G Compute providers via the `@0glabs/0g-serving-broker` SDK. You manage per-provider sub-accounts and sign every request with your wallet. For fine-tuning via the same SDK see [Fine-tuning](./fine-tuning); for funding and sub-account management see [Account](./account-management).
+
+:::tip Not sure which path to use?
+0G Compute offers **two ways** to run inference:
+
+- **[Router](./router/overview)** *(recommended for most applications)* — a single OpenAI-compatible API endpoint with one unified balance, automatic provider failover, and an API key. Use this if you're building a server-side app, agent, or prototype.
+- **Direct** *(this page)* — connect to individual providers, manage per-provider sub-accounts, and sign requests with your wallet. Use this for browser dApps with wallet signing or when you need direct on-chain control.
+
+Side-by-side comparison: [Router vs Direct](./router/comparison).
+:::
+
+:::note If your balance on pc.0g.ai looks empty
+The default **Router** view on [pc.0g.ai](https://pc.0g.ai) shows the Router balance, which is a separate on-chain pool from the per-provider sub-accounts described on this page. To see funds you've deposited on [compute-marketplace.0g.ai](https://compute-marketplace.0g.ai) (or through the CLI/SDK below), switch to **Advanced** mode using the top-right toggle on pc.0g.ai — it's the same Direct flow embedded in the new UI.
+:::
 
 ## Prerequisites
 
@@ -118,9 +132,10 @@ Used by centralized API-backed models (e.g., `qwen3.6-plus` via Alibaba Cloud).
 
 ### Option 1: Use the Hosted Web UI
 
-Visit the official 0G Compute Marketplace directly — no installation required:
+Two hosted entry points — both run the same Direct flow against the same per-provider sub-accounts:
 
-**[https://compute-marketplace.0g.ai/inference](https://compute-marketplace.0g.ai/inference)**
+- **[https://compute-marketplace.0g.ai/inference](https://compute-marketplace.0g.ai/inference)** — the original Marketplace UI
+- **[https://pc.0g.ai](https://pc.0g.ai)** with the top-right toggle set to **Advanced** — the same flow embedded in the new pc.0g.ai UI (the default "Router" mode on pc.0g.ai is a different, newer system — see the [Router docs](./router/overview))
 
 ### Option 2: Run Locally
 
@@ -187,7 +202,7 @@ Enter your wallet private key when prompted. This will be used for account manag
 
 ### Create Account & Add Funds
 
-Before using inference services, you need to fund your account. For detailed account management, see [Account Management](./account-management).
+Before using inference services, you need to fund your account. For detailed account management, see [Account](./account-management).
 
 ```bash
 0g-compute-cli deposit --amount 10
@@ -598,7 +613,7 @@ console.log('Reports saved to:', result.outputDirectory);
 
 ### Account Management
 
-For detailed account operations, see [Account Management](./account-management).
+For detailed account operations, see [Account](./account-management).
 
 :::info Minimum Balance Requirements
 - **Ledger creation** (`depositFund`): Requires a minimum of **3 0G** for initial deposit
@@ -956,6 +971,8 @@ if (chatID) {
 - If you see a sudden balance decrease, check your usage history — the total will match your actual usage
 
 This behavior is visible in the Web UI (provider sub-account balances), CLI (`get-account`), and SDK (`getAccount()`).
+
+**This applies only to the Direct flow.** The [Router](./router/overview) uses a different billing path with a single unified balance — there are no per-provider sub-accounts and no delayed batch settlement visible to callers.
 :::
 
 ## Rate Limits
@@ -1062,7 +1079,7 @@ pnpm add @0glabs/0g-serving-broker -g
 
 ## Next Steps
 
-- **Manage Accounts** → [Account Management Guide](./account-management)
+- **Manage Accounts** → [Account](./account-management)
 - **Fine-tune Models** → [Fine-tuning Guide](./fine-tuning)
 - **Become a Provider** → [Provider Setup](./inference-provider)
 - **View Examples** → [GitHub](https://github.com/0glabs/0g-compute-ts-starter-kit)
